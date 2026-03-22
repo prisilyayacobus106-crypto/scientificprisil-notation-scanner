@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choco-Pink Scientific Calculator 🍫💗</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Tema Warna --- */
+        :root {
+            --dark-choco: #5D4037; /* Coklat tua untuk teks/tombol */
+            --milk-choco: #8D6E63; /* Coklat susu */
+            --soft-pink: #F8BBD0;  /* Pink lembut untuk border/aksen */
+            --hot-pink: #F48FB1;   /* Pink cerah untuk hover/highlight */
+            --bg-cream: #FFF5F7;    /* Krem pink untuk background */
+            --panel-white: #FFFFFF; /* Putih untuk panel utama */
+            --text-gray: #757575;   /* Abu-abu untuk teks deskripsi */
+        }
+
+        /* --- Dasar Halaman --- */
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--bg-cream);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* --- Container Utama (Flexbox) --- */
+        .app-container {
+            display: flex;
+            background-color: var(--panel-white);
+            border-radius: 40px;
+            box-shadow: 0 15px 35px rgba(93, 64, 55, 0.1);
+            border: 8px solid var(--soft-pink);
+            max-width: 900px;
+            width: 100%;
+            overflow: hidden; /* Biar ujungnya bulat sempurna */
+            transition: all 0.3s ease;
+        }
+
+        /* --- CSS untuk Tampilan Mobile (Responsif) --- */
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column; /* Tumpuk ke bawah di HP */
+                max-width: 450px;
+            }
+        }
+
+        /* --- Panel Kiri: Scanner (Tugas Utama) --- */
+        .scanner-panel {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-right: 2px dashed var(--soft-pink); /* Pemisah estetik */
+        }
+
+        @media (max-width: 768px) {
+            .scanner-panel {
+                border-right: none;
+                border-bottom: 2px dashed var(--soft-pink);
+            }
+        }
+
+        /* --- Elemen Teks & Judul --- */
+        .app-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .app-title {
+            color: var(--dark-choco);
+            font-size: 1.8rem;
+            margin: 0 0 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .app-subtitle {
+            color: var(--text-gray);
+            font-weight: 500;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        /* --- Bagian Input --- */
+        .input-group {
+            width: 100%;
+            max-width: 320px;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            display: block;
+            color: var(--dark-choco);
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 18px 20px;
+            border: 3px solid var(--soft-pink);
+            border-radius: 20px;
+            outline: none;
+            font-size: 1.1rem;
+            color: var(--dark-choco);
+            box-sizing: border-box;
+            transition: 0.3s;
+            background-color: var(--bg-cream);
+        }
+
+        input:focus {
+            border-color: var(--hot-pink);
+            box-shadow: 0 0 10px rgba(244, 143, 177, 0.3);
+        }
+
+        /* --- Bagian Tombol Scan --- */
+        .scan-btn {
+            background-color: var(--dark-choco);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .scan-btn:hover {
+            background-color: var(--milk-choco);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(93, 64, 55, 0.2);
+        }
+
+        /* --- Bagian Hasil (Output) --- */
+        #result {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            text-align: center;
+            width: 100%;
+            max-width: 320px;
+            display: none; /* Sembunyi di awal */
+            font-size: 0.95rem;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .valid {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+            border: 2px solid #A5D6A7;
+        }
+
+        .invalid {
+            background-color: #FFEBEE;
+            color: #C62828;
+            border: 2px solid #EF9A9A;
+        }
+
+        /* --- Panel Kanan: Kalkulator (Aksen) --- */
+        .calc-panel {
+            flex: 0 0 320px;
+            background-color: var(--bg-cream);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .calc-panel {
+                flex: none;
+                width: 100%;
+                box-sizing: border-box;
+                padding: 30px;
+            }
+        }
+
+        .calc-header {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .calc-title {
+            color: var(--milk-choco);
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        /* --- Grid Kalkulator --- */
+        .calc-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            width: 100%;
+            max-width: 260px;
+        }
+
+        /* --- Tombol Kalkulator --- */
+        .calc-btn {
+            background-color: white;
+            color: var(--dark-choco);
+            border: 2px solid var(--soft-pink);
+            border-radius: 15px;
+            padding: 18px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .calc-btn:hover {
+            border-color: var(--hot-pink);
+            background-color: var(--soft-pink);
+            transform: scale(1.05);
+        }
+
+        .calc-btn.op {
+            background-color: var(--soft-pink);
+            color: white;
+            border: none;
+        }
+
+        .calc-btn.op:hover {
+            background-color: var(--hot-pink);
+        }
+
+        .calc-btn.eq {
+            grid-column: span 2;
+            background-color: var(--milk-choco);
+            color: white;
+            border: none;
+        }
+
+        .calc-btn.eq:hover {
+            background-color: var(--dark-choco);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <div class="scanner-panel">
+            <div class="app-header">
+                <h1 class="app-title">Scientific Notation Scanner 🍓</h1>
+                <p class="app-subtitle">Check if your number is a Scientific Notation</p>
+            </div>
+
+            <div class="input-group">
+                <label class="input-label" for="userInput">Enter Number</label>
+                <input type="text" id="userInput" placeholder="e.g. 6.022e23">
+            </div>
+
+            <button class="scan-btn" onclick="scanNow()">
+                <span>Scan Now</span> 🍫
+            </button>
+
+            <div id="result"></div>
+        </div>
+
+        <div class="calc-panel">
+            <div class="calc-header">
+                <h2 class="calc-title">Mini Calculator 💗</h2>
+            </div>
+            
+            <div class="calc-grid">
+                <button class="calc-btn op">C</button>
+                <button class="calc-btn op">±</button>
+                <button class="calc-btn op">%</button>
+                <button class="calc-btn op">÷</button>
+                
+                <button class="calc-btn">7</button>
+                <button class="calc-btn">8</button>
+                <button class="calc-btn">9</button>
+                <button class="calc-btn op">×</button>
+                
+                <button class="calc-btn">4</button>
+                <button class="calc-btn">5</button>
+                <button class="calc-btn">6</button>
+                <button class="calc-btn op">−</button>
+                
+                <button class="calc-btn">1</button>
+                <button class="calc-btn">2</button>
+                <button class="calc-btn">3</button>
+                <button class="calc-btn op">+</button>
+                
+                <button class="calc-btn">0</button>
+                <button class="calc-btn">.</button>
+                <button class="calc-btn eq">=</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function scanNow() {
+            const input = document.getElementById('userInput').value;
+            const resultDiv = document.getElementById('result');
+
+            // Regex for Scientific Notation (Tugas Inti)
+            // ^[+-]?       : Optional sign (+ or -)
+            // [0-9]+       : One or more digits (base part)
+            // (\.[0-9]+)?  : Optional decimal part (point and one or more digits)
+            // [eE]         : The exponent character (e or E)
+            // [+-]?       : Optional sign for the exponent (+ or -)
+            // [0-9]+$      : One or more digits for the exponent part
+            const scientificRegex = /^[+-]?[0-9]+(\.[0-9]+)?[eE][+-]?[0-9]+$/;
+
+            if (input.trim() === "") {
+                resultDiv.style.display = "none";
+                return;
+            }
+
+            resultDiv.style.display = "block";
+
+            if (scientificRegex.test(input)) {
+                resultDiv.innerHTML = "✨ Success!<br>This is a Scientific Notation.";
+                resultDiv.className = "valid";
+            } else {
+                resultDiv.innerHTML = "❌ Oops!<br>Not a Scientific Notation.";
+                resultDiv.className = "invalid";
+            }
+        }
+    </script>
+
+</body>
+</html>
